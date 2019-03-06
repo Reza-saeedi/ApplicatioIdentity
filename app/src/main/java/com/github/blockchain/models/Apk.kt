@@ -1,18 +1,19 @@
-package io.github.rajdeep1008.apkwizard.models
+package com.github.blockchain.models
 
 import android.os.Parcel
 import android.os.Parcelable
 
 /**
- * Created by rajdeep1008 on 19/04/18.
+ * Created by blockchain on 19/04/18.
  */
-data class Apk(val appName: String, val sourceDir: String, val packageName: String? = "", val version: String? = "", val systemApp: Boolean) : Parcelable {
-    constructor(parcel: Parcel) : this (
+data class Apk(val appName: String, val sourceDir: String, val packageName: String? = "", val version: String? = "", val systemApp: Boolean, val publicKey: String? = "" ) : Parcelable {
+    constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readByte() != 0.toByte())
+            parcel.readByte() != 0.toByte(),
+            parcel.readString())
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(appName)
@@ -20,6 +21,7 @@ data class Apk(val appName: String, val sourceDir: String, val packageName: Stri
         parcel.writeString(packageName)
         parcel.writeString(version)
         parcel.writeByte(if (systemApp) 1 else 0)
+        parcel.writeString(publicKey)
     }
 
     override fun describeContents(): Int = 0

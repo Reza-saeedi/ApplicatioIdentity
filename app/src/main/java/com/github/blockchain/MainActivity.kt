@@ -1,4 +1,4 @@
-package io.github.rajdeep1008.apkwizard
+package com.github.blockchain
 
 import android.app.SearchManager
 import android.content.*
@@ -11,18 +11,22 @@ import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.SearchView
+import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import io.github.rajdeep1008.apkwizard.adapters.ApkListAdapter
-import io.github.rajdeep1008.apkwizard.adapters.PagerAdapter
-import io.github.rajdeep1008.apkwizard.utils.Utilities
-import io.github.rajdeep1008.apkwizard.fragments.ApkListFragment
-import io.github.rajdeep1008.apkwizard.models.Apk
+import com.github.blockchain.adapters.ApkListAdapter
+import com.github.blockchain.adapters.PagerAdapter
+import com.github.blockchain.fragments.ApkListFragment
+import com.github.blockchain.models.Apk
+import com.github.blockchain.utils.Utilities
+import io.github.rajdeep1008.apkwizard.R
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.find
 import org.jetbrains.anko.uiThread
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener, ApkListAdapter.OnContextItemClickListener {
 
@@ -31,6 +35,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener, ApkLis
 
     private var broadcastReceiver: BroadcastReceiver? = null
 
+    private val myApkList = mutableListOf<Apk>()
     private val userApkList = mutableListOf<Apk>()
     private val systemApkList = mutableListOf<Apk>()
 
@@ -47,11 +52,13 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener, ApkLis
             }
         }
 
-        setupViewPager(mutableListOf(), mutableListOf())
+
+        setupViewPager(mutableListOf(), mutableListOf(), mutableListOf())
 
         doAsync {
             val allPackages: List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
-
+            com.github.blockchain.utils.BlockChainManager.getInstance().connectToEthNetwork()
+            myApkList.addAll(com.github.blockchain.utils.BlockChainManager.getInstance().myApplication)
             allPackages.forEach {
                 val applicationInfo: ApplicationInfo = it.applicationInfo
 
@@ -61,7 +68,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener, ApkLis
                             applicationInfo.sourceDir,
                             it.packageName,
                             it.versionName,
-                            false)
+                            false,
+                            getCode(it.packageName))
                     userApkList.add(userApk)
                 } else {
                     val systemApk = Apk(
@@ -69,14 +77,15 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener, ApkLis
                             applicationInfo.sourceDir,
                             it.packageName,
                             it.versionName,
-                            true)
+                            true,
+                            getCode(it.packageName))
 
                     systemApkList.add(systemApk)
                 }
             }
 
             uiThread {
-                setupViewPager(userApkList, systemApkList)
+                setupViewPager(userApkList, systemApkList, myApkList)
                 Utilities.updateSortOrder(this@MainActivity, PreferenceManager.getDefaultSharedPreferences(this@MainActivity).getInt(Utilities.PREF_SORT_KEY, 0))
                 progress.visibility = View.GONE
             }
@@ -135,8 +144,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener, ApkLis
         return true
     }
 
-    private fun setupViewPager(userApkList: List<Apk>, systemApkList: List<Apk>) {
-        container.adapter = PagerAdapter(supportFragmentManager, userApkList, systemApkList)
+    private fun setupViewPager(userApkList: List<Apk>, systemApkList: List<Apk>, myApkList: List<Apk>) {
+        container.adapter = PagerAdapter(supportFragmentManager, userApkList, systemApkList, myApkList)
         tab_bar.setupWithViewPager(container)
     }
 
@@ -189,4 +198,30 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener, ApkLis
     override fun onItemClicked(packageName: String) {
         contextItemPackageName = packageName
     }
+
+    fun getCode(packagename: String): String {
+        var code = ""
+        try {
+            val sigs = ApplicationLoader.applicationContext.packageManager.getPackageInfo(packagename, PackageManager.GET_SIGNATURES).signatures
+
+            for (signature in sigs) {
+                val signatureBytes = signature.toByteArray()
+
+                val md = MessageDigest.getInstance("SHA")
+
+                md.update(signature.toByteArray())
+
+                val currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT)
+
+                code += currentSignature
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        }
+
+        return code
+    }
+
 }

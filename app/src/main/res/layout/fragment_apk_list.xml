@@ -1,9 +1,22 @@
-<android.support.v7.widget.RecyclerView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/apk_list_rv"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="8dp"
-    tools:listitem="@layout/apk_item"
-    tools:context="io.github.rajdeep1008.apkwizard.fragments.ApkListFragment" />
+    android:layout_width="match_parent">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/apk_list_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        tools:listitem="@layout/apk_item"
+        tools:context="io.github.rajdeep1008.apkwizard.com.github.rajdeep1008.apkwizard.fragments.ApkListFragment" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_app_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/add"
+        android:layout_gravity="bottom|right"
+        android:visibility="gone"
+        android:padding="5dp"
+        android:layout_margin="16dp"/>
+</FrameLayout>

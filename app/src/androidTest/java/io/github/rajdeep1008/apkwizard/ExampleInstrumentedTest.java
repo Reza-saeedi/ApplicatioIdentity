@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("io.github.rajdeep1008.apkwizard", appContext.getPackageName());
+        assertEquals("io.github.blockchain.apkwizard", appContext.getPackageName());
     }
 }

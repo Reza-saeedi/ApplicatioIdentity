@@ -1,4 +1,4 @@
-package io.github.rajdeep1008.apkwizard.utils
+package com.github.blockchain.utils
 
 import android.Manifest
 import android.content.Context
@@ -14,13 +14,13 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import io.github.rajdeep1008.apkwizard.MainActivity
-import io.github.rajdeep1008.apkwizard.models.Apk
+import com.github.blockchain.MainActivity
+import com.github.blockchain.models.Apk
 import org.apache.commons.io.FileUtils
 import java.io.File
 
 /**
- * Created by rajdeep1008 on 22/04/18.
+ * Created by blockchain on 22/04/18.
  */
 class Utilities {
 

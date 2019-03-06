@@ -1,29 +1,30 @@
-package io.github.rajdeep1008.apkwizard.adapters
+package com.github.blockchain.adapters
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.github.blockchain.DetailActivity
+import com.github.blockchain.MainActivity
+import com.github.blockchain.models.Apk
+import com.github.blockchain.utils.Utilities
 import io.github.rajdeep1008.apkwizard.R
-import io.github.rajdeep1008.apkwizard.DetailActivity
-import io.github.rajdeep1008.apkwizard.MainActivity
-import io.github.rajdeep1008.apkwizard.utils.Utilities
-import io.github.rajdeep1008.apkwizard.models.Apk
 import kotlinx.android.synthetic.main.apk_item.view.*
 import java.util.*
-import android.content.pm.PackageManager
 
 
 /**
- * Created by rajdeep1008 on 20/04/18.
+ * Created by blockchain on 20/04/18.
  */
 class ApkListAdapter(var apkList: ArrayList<Apk>, private val context: Context) : RecyclerView.Adapter<ApkListAdapter.ApkListViewHolder>() {
 
@@ -42,25 +43,35 @@ class ApkListAdapter(var apkList: ArrayList<Apk>, private val context: Context) 
 
     override fun onBindViewHolder(holder: ApkListViewHolder?, position: Int) {
         try {
-            val app = context.packageManager.getApplicationInfo(apkList[position].packageName, 0)
-            val icon = context.packageManager.getApplicationIcon(app)
-            val name = context.packageManager.getApplicationLabel(app)
+            if(TextUtils.isEmpty(mOriginalApkList[position].sourceDir))
+            {
+                holder?.mLabelTextView?.text = mOriginalApkList[position].appName
+                holder?.mUninstallBtn?.visibility = View.GONE
+                holder?.mExtractBtn?.visibility = View.GONE
+                holder?.mMenuBtn?.visibility = View.GONE
+                holder?.mShareBtn?.visibility = View.GONE
+                holder?.mIconImageView?.setImageResource(R.drawable.ic_launcher)
+            }else {
+                val app = context.packageManager.getApplicationInfo(apkList[position].packageName, 0)
+                val icon = context.packageManager.getApplicationIcon(app)
+                val name = context.packageManager.getApplicationLabel(app)
 
-            holder?.mIconImageView?.setImageDrawable(icon)
-            holder?.mLabelTextView?.text = name
+                holder?.mIconImageView?.setImageDrawable(icon)
+                holder?.mLabelTextView?.text = name
+            }
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
-        holder?.mPackageTextView?.text = apkList[position].packageName
+        holder?.mPackageTextView?.text = apkList[position].packageName + "\n" +apkList[position].publicKey
 
         if (apkList[position].systemApp)
             holder?.mUninstallBtn?.visibility = View.GONE
     }
 
     inner class ApkListViewHolder(view: View, context: Context, apkList: ArrayList<Apk>) : RecyclerView.ViewHolder(view) {
-        private val mShareBtn: Button = view.share_btn
-        private val mMenuBtn: ImageButton = view.menu_btn
-        private val mExtractBtn: Button = view.extract_btn
+         val mShareBtn: Button = view.share_btn
+         val mMenuBtn: ImageButton = view.menu_btn
+         val mExtractBtn: Button = view.extract_btn
 
         val mIconImageView: ImageView = view.apk_icon_iv
         val mLabelTextView: TextView = view.apk_label_tv

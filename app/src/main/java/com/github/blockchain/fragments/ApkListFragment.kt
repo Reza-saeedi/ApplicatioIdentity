@@ -1,5 +1,6 @@
-package io.github.rajdeep1008.apkwizard.fragments
+package com.github.blockchain.fragments
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -7,10 +8,11 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import com.github.blockchain.AddApplicationActivity
+import com.github.blockchain.adapters.ApkListAdapter
+import com.github.blockchain.models.Apk
+import com.github.blockchain.utils.Utilities
 import io.github.rajdeep1008.apkwizard.R
-import io.github.rajdeep1008.apkwizard.adapters.ApkListAdapter
-import io.github.rajdeep1008.apkwizard.utils.Utilities
-import io.github.rajdeep1008.apkwizard.models.Apk
 import kotlinx.android.synthetic.main.fragment_apk_list.view.*
 import java.io.File
 import java.util.*
@@ -25,10 +27,19 @@ class ApkListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeLi
 
     companion object {
         const val APK_ARG: String = "apk-list"
-
+        const val ADD_ARG: String = "can-add"
         fun newInstance(apkList: ArrayList<Apk>): ApkListFragment {
             val fragment = ApkListFragment()
             val args = Bundle()
+            args.putParcelableArrayList(APK_ARG, apkList)
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(apkList: ArrayList<Apk>, add :Boolean): ApkListFragment {
+            val fragment = ApkListFragment()
+            val args = Bundle()
+            args.putBoolean(ADD_ARG,add)
             args.putParcelableArrayList(APK_ARG, apkList)
             fragment.arguments = args
             return fragment
@@ -52,6 +63,13 @@ class ApkListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeLi
 
         mRecyclerView.layoutManager = mLinearLayoutManager
         mRecyclerView.adapter = mAdapter
+
+        rootView.add_app_fab.setOnClickListener {
+            val intent = Intent(context, AddApplicationActivity::class.java)
+            startActivity(intent)
+        }
+        if(arguments.getBoolean(ADD_ARG,false))
+            rootView.add_app_fab.visibility= View.VISIBLE
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(activity)
         preferences.registerOnSharedPreferenceChangeListener(this)

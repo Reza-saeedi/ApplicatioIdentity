@@ -3,18 +3,21 @@
     package="io.github.rajdeep1008.apkwizard">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
+        android:name="com.github.blockchain.ApplicationLoader"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.github.blockchain.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
@@ -26,13 +29,15 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".AboutActivity"
-            android:parentActivityName=".MainActivity">
+            android:name="com.github.blockchain.AboutActivity"
+            android:parentActivityName="com.github.blockchain.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.github.blockchain.MainActivity" />
         </activity>
-        <activity android:name=".DetailActivity"></activity>
+        <activity android:name="com.github.blockchain.DetailActivity"></activity>
+        <activity android:name="com.github.blockchain.AddApplicationActivity"></activity>
+        <activity android:name="com.github.blockchain.VerifyApplication"></activity>
     </application>
 
 </manifest>
